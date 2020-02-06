@@ -13,3 +13,17 @@ func GetFlights(p graphql.ResolveParams) (i interface{},e error){
 
 	return flights,err
 }
+
+func FilterFlights(p graphql.ResolveParams) (i interface{}, e error){
+
+	airlines := p.Args["airlines"]
+	facilities := p.Args["facilities"]
+	departures:=p.Args["departures"]
+	arrivals:=p.Args["arrivals"]
+	duration:=p.Args["duration"].(int)
+
+
+	flights, err := models.FilterFlights(airlines, facilities,departures,arrivals,duration)
+
+	return flights,err
+}

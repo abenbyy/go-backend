@@ -24,58 +24,58 @@ func init(){
 
 	defer db.Close()
 
-	db.DropTableIfExists(&Station{})
+	//db.DropTableIfExists(&Station{})
 	db.AutoMigrate(&Station{})
 
-	//1
-	db.Create(&Station{
-		Code:      "JAKK",
-		Name:      "Jakarta Kota",
-		City:      "Jakarta",
-	})
-
-	//2
-	db.Create(&Station{
-		Code:      "SMT",
-		Name:      "Semarangtawang",
-		City:      "Semarang",
-	})
-
-	//3
-	db.Create(&Station{
-		Code:      "PSE",
-		Name:      "Pasar Senen",
-		City:      "Jakarta",
-	})
-
-	//4
-	db.Create(&Station{
-		Code:      "GMR",
-		Name:      "Gambir",
-		City:      "Jakarta",
-	})
-	
-
-	//5
-	db.Create(&Station{
-		Code:      "CMI",
-		Name:      "Cimahi",
-		City:      "Bandung",
-	})
-
-	//6
-	db.Create(&Station{
-		Code:      "KAC",
-		Name:      "Kiaracondong",
-		City:      "Bandung",
-	})
-
-	//7
-	db.Create(&Station{
-		Code:      "BD",
-		Name:      "Bandung",
-		City:      "Bandung",
-	})
+	////1
+	//db.Create(&Station{
+	//	Code:      "JAKK",
+	//	Name:      "Jakarta Kota",
+	//	City:      "Jakarta",
+	//})
+	//
+	////2
+	//db.Create(&Station{
+	//	Code:      "SMT",
+	//	Name:      "Semarangtawang",
+	//	City:      "Semarang",
+	//})
+	//
+	////3
+	//db.Create(&Station{
+	//	Code:      "PSE",
+	//	Name:      "Pasar Senen",
+	//	City:      "Jakarta",
+	//})
+	//
+	////4
+	//db.Create(&Station{
+	//	Code:      "GMR",
+	//	Name:      "Gambir",
+	//	City:      "Jakarta",
+	//})
+	//
+	//
+	////5
+	//db.Create(&Station{
+	//	Code:      "CMI",
+	//	Name:      "Cimahi",
+	//	City:      "Bandung",
+	//})
+	//
+	////6
+	//db.Create(&Station{
+	//	Code:      "KAC",
+	//	Name:      "Kiaracondong",
+	//	City:      "Bandung",
+	//})
+	//
+	////7
+	//db.Create(&Station{
+	//	Code:      "BD",
+	//	Name:      "Bandung",
+	//	City:      "Bandung",
+	//})
 
 }
 

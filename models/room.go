@@ -8,7 +8,7 @@ import (
 type Room struct{
 	Id			int				`gorm:primary_key`
 	Name		string			`gorm:varchar(100);not null`
-	//Image
+	Image		string
 	//Service
 	RoomSize	int	 			`gorm:int`
 	Price		int				`gorm:int`

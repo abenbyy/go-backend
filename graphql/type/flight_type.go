@@ -39,6 +39,12 @@ func GetFlightType() *graphql.Object{
 				"servicecharge": &graphql.Field{
 					Type:graphql.Int,
 				},
+				"facilities": &graphql.Field{
+					Type: graphql.NewList(GetFlightFacilityType()),
+				},
+				"routes": &graphql.Field{
+					Type: graphql.NewList(GetFlightRouteType()),
+				},
 			},
 		})
 	}

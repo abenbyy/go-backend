@@ -71,6 +71,29 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetFlights,
 				Description: "Search Flights",
 			},
+			"filterflights":{
+							Type:graphql.NewList(typ.GetFlightType()),
+							Args:graphql.FieldConfigArgument{
+								"airlines": &graphql.ArgumentConfig{
+
+									Type: graphql.NewList(graphql.String),
+								},
+								"facilities": &graphql.ArgumentConfig{
+										Type: graphql.NewList(graphql.String),
+								},
+								"departures":&graphql.ArgumentConfig{
+											Type:graphql.NewList(graphql.Int),
+								},
+								"arrivals": &graphql.ArgumentConfig{
+									Type: graphql.NewList(graphql.Int),
+								},
+								"duration": &graphql.ArgumentConfig{
+									Type: graphql.Int,
+								},
+							},
+							Resolve: res.FilterFlights,
+							Description: "Filter Flights",
+			},
 			"trains":{
 				Type:	graphql.NewList(typ.GetTrainType()),
 				Resolve: res.GetTrains,
@@ -93,6 +116,16 @@ func GetRoot() *graphql.Object{
 				},
 				Resolve: res.GetTrips,
 				Description: "Search Trips",
+			},
+			"searchhotel":{
+				Type: graphql.NewList(typ.GetHotelType()),
+				Args:graphql.FieldConfigArgument{
+					"city": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+				},
+				Resolve: res.GetHotels,
+				Description: "Search Hotels",
 			},
 		},
 	})

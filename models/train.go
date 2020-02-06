@@ -22,99 +22,99 @@ func init(){
 
 	defer db.Close()
 
-	db.DropTableIfExists(&Train{})
+	//db.DropTableIfExists(&Train{})
 
 	db.AutoMigrate(&Train{})
 
 	//1
-	db.Create(&Train{
-
-		Name:     "Argo Parahyangan",
-		Class:    "Executive",
-		Subclass: "J",
-		Code:	"47",
-	})
-
-	//2
-	db.Create(&Train{
-
-		Name:     "Pangandaran",
-		Class:    "Executive",
-		Subclass: "A",
-		Code:	"175",
-	})
-
-	//3
-	db.Create(&Train{
-
-		Name:     "Argo Parahyangan",
-		Class:    "Executive",
-		Subclass: "J",
-		Code:	"49",
-	})
-
-	//4
-	db.Create(&Train{
-
-		Name:     "Argo Willis",
-		Class:    "Executive",
-		Subclass: "H",
-		Code:	"1",
-	})
-
-	//5
-	db.Create(&Train{
-
-		Name:     "Argo Parahyangan Priority",
-		Class:    "Executive",
-		Subclass: "I",
-		Code:	"49P",
-	})
-
-	//6
-	db.Create(&Train{
-
-		Name:     "Serayu",
-		Class:    "Economy",
-		Subclass: "C",
-		Code:	"325",
-	})
-
-	//7
-	db.Create(&Train{
-
-		Name:     "Majapahit",
-		Class:    "Economy",
-		Subclass: "J",
-		Code:	"252",
-	})
-
-	//8
-	db.Create(&Train{
-
-		Name:     "Argo Sindoro",
-		Class:    "Economy",
-		Subclass: "P",
-		Code:	"12",
-	})
-
-	//9
-	db.Create(&Train{
-
-		Name:     "Menoreh",
-		Class:    "Business",
-		Subclass: "S",
-		Code:	"264",
-	})
-
-	//10
-	db.Create(&Train{
-
-		Name:     "Argo Bromo",
-		Class:    "Business",
-		Subclass: "H",
-		Code:	"6L",
-	})
+	//db.Create(&Train{
+	//
+	//	Name:     "Argo Parahyangan",
+	//	Class:    "Executive",
+	//	Subclass: "J",
+	//	Code:	"47",
+	//})
+	//
+	////2
+	//db.Create(&Train{
+	//
+	//	Name:     "Pangandaran",
+	//	Class:    "Executive",
+	//	Subclass: "A",
+	//	Code:	"175",
+	//})
+	//
+	////3
+	//db.Create(&Train{
+	//
+	//	Name:     "Argo Parahyangan",
+	//	Class:    "Executive",
+	//	Subclass: "J",
+	//	Code:	"49",
+	//})
+	//
+	////4
+	//db.Create(&Train{
+	//
+	//	Name:     "Argo Willis",
+	//	Class:    "Executive",
+	//	Subclass: "H",
+	//	Code:	"1",
+	//})
+	//
+	////5
+	//db.Create(&Train{
+	//
+	//	Name:     "Argo Parahyangan Priority",
+	//	Class:    "Executive",
+	//	Subclass: "I",
+	//	Code:	"49P",
+	//})
+	//
+	////6
+	//db.Create(&Train{
+	//
+	//	Name:     "Serayu",
+	//	Class:    "Economy",
+	//	Subclass: "C",
+	//	Code:	"325",
+	//})
+	//
+	////7
+	//db.Create(&Train{
+	//
+	//	Name:     "Majapahit",
+	//	Class:    "Economy",
+	//	Subclass: "J",
+	//	Code:	"252",
+	//})
+	//
+	////8
+	//db.Create(&Train{
+	//
+	//	Name:     "Argo Sindoro",
+	//	Class:    "Economy",
+	//	Subclass: "P",
+	//	Code:	"12",
+	//})
+	//
+	////9
+	//db.Create(&Train{
+	//
+	//	Name:     "Menoreh",
+	//	Class:    "Business",
+	//	Subclass: "S",
+	//	Code:	"264",
+	//})
+	//
+	////10
+	//db.Create(&Train{
+	//
+	//	Name:     "Argo Bromo",
+	//	Class:    "Business",
+	//	Subclass: "H",
+	//	Code:	"6L",
+	//})
 
 }
 
