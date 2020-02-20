@@ -27,5 +27,5 @@ func init(){
 	defer db.Close()
 
 	db.DropTableIfExists(&Room{})
-	db.AutoMigrate(&Room{})
+	//db.AutoMigrate(&Room{})
 }

@@ -33,6 +33,12 @@ func GetHotelRoomType() *graphql.Object{
 				"price": &graphql.Field{
 					Type:graphql.Int,
 				},
+				"freecancel": &graphql.Field{
+					Type: graphql.Boolean,
+				},
+				"payathotel": &graphql.Field{
+					Type: graphql.Boolean,
+				},
 			},
 		})
 	}

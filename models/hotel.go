@@ -17,6 +17,8 @@ type Hotel struct{
 	ServiceRate		int
 	Rooms			[]HotelRoom		`gorm:"foreignkey:HotelRoomRefer"`
 	Facilities		[]HotelFacility `gorm:"foreignkey:HotelFacilityRefer"`
+	Reviews			[]HotelReview	`gorm:"foreignkey:HotelReviewRefer"`
+	Area			string
 	City			string
 	Province		string
 	Latitude		float64
@@ -52,7 +54,21 @@ type HotelRoom struct {
 	BedDetail		string
 	Breakfast		bool
 	Wifi			bool
+	FreeCancel		bool
+	PayAtHotel		bool
 	Price			int
+}
+
+type HotelReview struct {
+	Id				 int		`gorm: primary_key`
+	HotelReviewRefer uint
+	Name			 string
+	Category		string
+	Title			string
+	Content			string
+	Date			string
+	Overall			float64
+
 }
 
 func init(){
@@ -63,6 +79,7 @@ func init(){
 	}
 	defer db.Close()
 
+	db.DropTableIfExists(&HotelReview{})
 	db.DropTableIfExists(&HotelRoom{})
 	db.DropTableIfExists(&HotelFacility{})
 	db.DropTableIfExists(&Hotel{})
@@ -70,8 +87,98 @@ func init(){
 	db.AutoMigrate(&Hotel{})
 	db.AutoMigrate(&HotelFacility{})
 	db.AutoMigrate(&HotelRoom{})
+	db.AutoMigrate(&HotelReview{})
+
 	db.Model(&HotelFacility{}).AddForeignKey("hotel_facility_refer","hotels(id)","CASCADE","CASCADE")
 	db.Model(&HotelRoom{}).AddForeignKey("hotel_room_refer","hotels(id)","CASCADE","CASCADE")
+	db.Model(&HotelReview{}).AddForeignKey("hotel_review_refer","hotels(id)","CASCADE","CASCADE")
+
+	SeedHotelData()
+
+}
+
+var recenthotels []Hotel
+
+func GetHotels(city string)([]Hotel,error){
+
+	db,err:=database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var hotels []Hotel
+
+	db.Where("city IN (?)",city).Preload("Rooms").Preload("Facilities").Preload("Reviews").Find(&hotels)
+
+	recenthotels = hotels
+
+
+	return hotels,nil
+}
+
+func FilterHotels(reqstars interface{})([]Hotel,error){
+
+	var inithotel []Hotel
+	inithotel = recenthotels
+
+	rstars := reqstars.([]interface{})
+
+	var starfiltered []Hotel
+
+	if len(rstars)>0{
+		for i,_ := range inithotel{
+			for j,_ :=range rstars{
+				if inithotel[i].Star == rstars[j]{
+					starfiltered = append(starfiltered,inithotel[i])
+					break
+				}
+			}
+		}
+	}else{
+		starfiltered = inithotel
+	}
+
+
+
+	finalflights := starfiltered
+
+	return finalflights, nil
+}
+
+
+func GetNearestHotels(latitude float64, longitude float64, amount int)([]Hotel, error){
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	var hotels []Hotel
+
+	db.Where("id IN (?)",db.Raw("SELECT id FROM (SELECT id,(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude )))) AS distance FROM hotels ORDER BY distance) AS sub",latitude,longitude,latitude).SubQuery()).Preload("Reviews").Preload("Rooms").Preload("Facilities").Find(&hotels)
+
+	//db.Raw("SELECT * , (3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude )))) AS dist FROM hotels ORDER BY dist LIMIT 8", latitude,longitude,latitude).Preload("Rooms").Preload("Facilities").Scan(&hotels)
+	defer db.Close()
+
+	//slc := amount.(int)
+	res := hotels[0:amount]
+	//fmt.Println(hotels[0].Name)
+	//fmt.Println(hotels[0].Rooms)
+
+	//fmt.Println(res)
+	return res, nil
+}
+
+func SeedHotelData(){
+	db, err := database.Connect()
+
+	if err !=nil{
+		panic(err)
+	}
+	defer db.Close()
 
 	db.Create(&Hotel{
 		Id:			1,
@@ -83,6 +190,7 @@ func init(){
 		CleanRate:	  90,
 		RoomRate:	  86,
 		ServiceRate:  88,
+		Area:		"Palmerah",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.2069054,
@@ -111,6 +219,8 @@ func init(){
 		BedDetail:      "1 Queen Bed",
 		Breakfast:      false,
 		Wifi:           true,
+		FreeCancel:		true,
+		PayAtHotel:		true,
 		Price:          275000,
 	})
 
@@ -123,6 +233,8 @@ func init(){
 		BedDetail:      "2 Single Bed",
 		Breakfast:      false,
 		Wifi:           true,
+		FreeCancel:		true,
+		PayAtHotel:		false,
 		Price:          354000,
 	})
 
@@ -135,7 +247,104 @@ func init(){
 		BedDetail:      "1 Kings Bed",
 		Breakfast:      true,
 		Wifi:           true,
+		FreeCancel:		false,
+		PayAtHotel:		false,
 		Price:          730000,
+	})
+
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Danny Wiselee",
+		Category:         "Solo",
+		Title:            "Mantap",
+		Content:          "Hotel ini serasa seperti hotel",
+		Date:             "11 Januari 2019",
+		Overall:          9.0,
+	})
+
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Chandra Tan",
+		Category:         "Couple",
+		Title:            "Hotel ini sangat luas",
+		Content:          "Saya kira ini hotel, ternyata memang hotel",
+		Date:             "15 Januari 2019",
+		Overall:          8.7,
+	})
+
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
+	})
+	db.Create(&HotelReview{
+		HotelReviewRefer: 1,
+		Name:             "Jehtro Otto",
+		Category:         "Business",
+		Title:            "Duar Bebek",
+		Content:          "Tepung beras rosebrand",
+		Date:             "19 Januari 2020",
+		Overall:          9.5,
 	})
 
 
@@ -149,6 +358,7 @@ func init(){
 		CleanRate:	  97,
 		RoomRate:	  99,
 		ServiceRate:  93,
+		Area:		"Menteng",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.2009372,
@@ -215,6 +425,7 @@ func init(){
 		CleanRate:	  70,
 		RoomRate:	  70,
 		ServiceRate:  71,
+		Area:		"Palmerah",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.1702381,
@@ -292,6 +503,7 @@ func init(){
 		CleanRate:	  78,
 		RoomRate:	  83,
 		ServiceRate:  85,
+		Area:		"Semanggi",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.2117281,
@@ -381,6 +593,7 @@ func init(){
 		CleanRate:	  89,
 		RoomRate:	  83,
 		ServiceRate:  88,
+		Area:		"Thamrin",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.1962685,
@@ -447,6 +660,7 @@ func init(){
 		CleanRate:	  59,
 		RoomRate:	  59,
 		ServiceRate:  62,
+		Area:		"Senen",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.1912715,
@@ -536,6 +750,7 @@ func init(){
 		CleanRate:	  82,
 		RoomRate:	  76,
 		ServiceRate:  78,
+		Area:		"Menteng",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.1946674,
@@ -613,6 +828,7 @@ func init(){
 		CleanRate:	  91,
 		RoomRate:	  85,
 		ServiceRate:  88,
+		Area:		"Senayan",
 		City:       "Jakarta",
 		Province:   "DKI Jakarta",
 		Latitude:   -6.2123667,
@@ -668,27 +884,3 @@ func init(){
 
 
 }
-
-var recenthotels []Hotel
-
-func GetHotels(city string)([]Hotel,error){
-
-	db,err:=database.Connect()
-
-	if err != nil{
-		panic(err)
-	}
-
-	defer db.Close()
-
-	var hotels []Hotel
-
-	db.Where("city IN (?)",city).Preload("Rooms").Preload("Facilities").Find(&hotels)
-
-	recenthotels = hotels
-
-
-	return hotels,nil
-}
-
-

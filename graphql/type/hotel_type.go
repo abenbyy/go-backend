@@ -45,6 +45,9 @@ func GetHotelType() *graphql.Object{
 				"zoomlevel": &graphql.Field{
 					Type:graphql.Int,
 				},
+				"area": &graphql.Field{
+					Type: graphql.String,
+				},
 				"city": &graphql.Field{
 					Type:graphql.String,
 				},
@@ -56,6 +59,9 @@ func GetHotelType() *graphql.Object{
 				},
 				"rooms": &graphql.Field{
 					Type: graphql.NewList(GetHotelRoomType()),
+				},
+				"reviews": &graphql.Field{
+					Type:  graphql.NewList(GetHotelReviewType()),
 				},
 			},
 		})

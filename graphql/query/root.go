@@ -72,27 +72,27 @@ func GetRoot() *graphql.Object{
 				Description: "Search Flights",
 			},
 			"filterflights":{
-							Type:graphql.NewList(typ.GetFlightType()),
-							Args:graphql.FieldConfigArgument{
-								"airlines": &graphql.ArgumentConfig{
+				Type:graphql.NewList(typ.GetFlightType()),
+				Args:graphql.FieldConfigArgument{
+					"airlines": &graphql.ArgumentConfig{
 
-									Type: graphql.NewList(graphql.String),
-								},
-								"facilities": &graphql.ArgumentConfig{
-										Type: graphql.NewList(graphql.String),
-								},
-								"departures":&graphql.ArgumentConfig{
-											Type:graphql.NewList(graphql.Int),
-								},
-								"arrivals": &graphql.ArgumentConfig{
-									Type: graphql.NewList(graphql.Int),
-								},
-								"duration": &graphql.ArgumentConfig{
-									Type: graphql.Int,
-								},
-							},
-							Resolve: res.FilterFlights,
-							Description: "Filter Flights",
+						Type: graphql.NewList(graphql.String),
+					},
+					"facilities": &graphql.ArgumentConfig{
+							Type: graphql.NewList(graphql.String),
+					},
+					"departures":&graphql.ArgumentConfig{
+								Type:graphql.NewList(graphql.Int),
+					},
+					"arrivals": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.Int),
+					},
+					"duration": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.FilterFlights,
+				Description: "Filter Flights",
 			},
 			"trains":{
 				Type:	graphql.NewList(typ.GetTrainType()),
@@ -126,6 +126,42 @@ func GetRoot() *graphql.Object{
 				},
 				Resolve: res.GetHotels,
 				Description: "Search Hotels",
+			},
+			"filterhotel":{
+				Type:graphql.NewList(typ.GetHotelType()),
+				Args:graphql.FieldConfigArgument{
+					"stars": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.Int),
+					},
+				},
+				Resolve:res.FilterHotels,
+				Description:"Filter Hotel",
+			},
+			"nearesthotel":{
+				Type:graphql.NewList(typ.GetHotelType()),
+				Args:graphql.FieldConfigArgument{
+					"lat": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"lng": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"amount": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve:res.GetNearestHotels,
+				Description:"Get Nearest X Hotel",
+			},
+			"searchcar":{
+				Type: graphql.NewList(typ.GetCarType()),
+				Args:graphql.FieldConfigArgument{
+					"city": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+				},
+				Resolve: res.GetCars,
+				Description: "Search Cars",
 			},
 		},
 	})

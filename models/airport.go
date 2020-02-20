@@ -50,6 +50,16 @@ func init(){
 	//	Country:   "Singapore",
 	//
 	//})
+	//db.Create(&Airport{
+	//	Id:        3,
+	//	Code:      "PLM",
+	//	Name:      "Palembang",
+	//	City:      "Palembang",
+	//	CityCode:  "PLM",
+	//	Province:  "Sumatera Selatan",
+	//	Country:   "Indonesia",
+	//
+	//})
 }
 
 func GetAirports()([]Airport, error){
