@@ -163,6 +163,34 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetCars,
 				Description: "Search Cars",
 			},
+
+			"searchentertainment":{
+				Type: graphql.NewList(typ.GetEntertainmentType()),
+				Args:graphql.FieldConfigArgument{
+					"type": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+				},
+				Resolve: res.GetEntertainments,
+				Description: "Search Entertainments",
+			},
+
+			"trendingentertainment":{
+				Type: graphql.NewList(typ.GetEntertainmentType()),
+				Args:graphql.FieldConfigArgument{
+					"type": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+				},
+				Resolve: res.GetTrendingEntertainment,
+				Description: "Get Trending Entertainments",
+			},
+
+			"bestentertainment":{
+				Type: graphql.NewList(typ.GetEntertainmentType()),
+				Resolve: res.GetBestEntertainment,
+				Description: "Get Best Entertainments",
+			},
 		},
 	})
 }
