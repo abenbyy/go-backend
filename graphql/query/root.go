@@ -191,6 +191,12 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetBestEntertainment,
 				Description: "Get Best Entertainments",
 			},
+
+			"allblogs":{
+				Type: graphql.NewList(typ.GetBlogType()),
+				Resolve: res.GetBlogs,
+				Description: "Get All Blogs",
+			},
 		},
 	})
 }

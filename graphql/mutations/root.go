@@ -37,6 +37,25 @@ func GetRoot() *graphql.Object{
 				Resolve: res.CreateUser,
 				Description: "Get User Based on Email",
 			},
+			"createblog":{
+				Type: typ.GetBlogType(),
+				Args: graphql.FieldConfigArgument{
+					"title": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"content": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"image": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+				},
+				Resolve: res.CreateBlog,
+				Description: "Create Blog",
+			},
 		},
 	})
 }
