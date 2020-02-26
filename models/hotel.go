@@ -158,7 +158,7 @@ func GetNearestHotels(latitude float64, longitude float64, amount int)([]Hotel, 
 
 	var hotels []Hotel
 
-	db.Where("id IN (?)",db.Raw("SELECT id FROM (SELECT id,(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude )))) AS distance FROM hotels ORDER BY distance) AS sub",latitude,longitude,latitude).SubQuery()).Preload("Reviews").Preload("Rooms").Preload("Facilities").Find(&hotels)
+	db.Where("id IN (?)",db.Raw("SELECT id FROM (SELECT id,(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude )))) AS distance FROM hotels ORDER BY distance LIMIT 8) AS sub",latitude,longitude,latitude).SubQuery()).Preload("Reviews").Preload("Rooms").Preload("Facilities").Find(&hotels)
 
 	//db.Raw("SELECT * , (3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude )))) AS dist FROM hotels ORDER BY dist LIMIT 8", latitude,longitude,latitude).Preload("Rooms").Preload("Facilities").Scan(&hotels)
 	defer db.Close()

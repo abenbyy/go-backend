@@ -197,6 +197,21 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetBlogs,
 				Description: "Get All Blogs",
 			},
+			"popularblogs":{
+				Type: graphql.NewList(typ.GetBlogType()),
+				Resolve: res.GetPopularBlogs,
+				Description: "Get Popular Blogs",
+			},
+			"blog":{
+				Type: typ.GetBlogType(),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetBlog,
+				Description: "Get Blog by Id",
+			},
 		},
 	})
 }
