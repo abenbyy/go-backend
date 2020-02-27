@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/abenbyy/go-backend/database"
 	"time"
 )
@@ -23,10 +24,12 @@ type Entertainment struct {
 
 type EntertainmentTicket struct {
 	Id		    int 		`gorm:primary_key`
-	TicketRefer uint
+	TicketRefer int
 	Name		string
-
 	Price		int
+	CreatedAt	time.Time
+	UpdatedAt	time.Time
+	DeletedAt	*time.Time
 }
 
 func init(){
@@ -96,6 +99,94 @@ func GetBestEntertainments()([]Entertainment, error){
 
 	return entertainments, nil
 }
+
+
+func CreateEntertainment(ent Entertainment, tickets []EntertainmentTicket){
+	db ,err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Create(&ent)
+
+	var newent Entertainment
+	db.Where("name = ? ",ent.Name).First(&newent)
+	fmt.Println(newent)
+	CreateTicket(newent.Id, tickets)
+}
+
+func CreateTicket(refer int, tickets []EntertainmentTicket){
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	for i := range(tickets){
+		tickets[i].TicketRefer = refer
+		db.Create(&EntertainmentTicket{
+			TicketRefer: tickets[i].TicketRefer,
+			Name:        tickets[i].Name,
+			Price:       tickets[i].Price,
+		})
+	}
+	//fmt.Print(tickets)
+
+
+
+	var tick []EntertainmentTicket
+	db.Where("ticket_refer = ?", refer).Find(&tick)
+	fmt.Println(tick)
+}
+
+func UpdateEntertainment(id int, ent Entertainment)(e error){
+
+	db, err:= database.Connect()
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+
+	fail := db.Model(&Entertainment{}).Where("id = ?",id).Updates(Entertainment{
+		Name:      ent.Name,
+		Type:      ent.Type,
+		Address:   ent.Address,
+		Latitude:  ent.Latitude,
+		Longitude: ent.Longitude,
+	}).Error
+
+	return fail
+
+}
+
+func DeleteEntertainment(id int)(e error){
+	db, err := database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	fail := db.Where("id = ?",id).Delete(Entertainment{}).Error
+
+	if(fail != nil){
+		return e
+	}
+
+	return nil
+
+}
+
+
+
 
 func SeedEntertainmentData(){
 	db, err := database.Connect()

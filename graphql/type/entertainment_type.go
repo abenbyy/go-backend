@@ -39,3 +39,4 @@ func GetEntertainmentType() *graphql.Object{
 
 	return entertainmentType
 }
+

@@ -4,6 +4,7 @@ import "github.com/graphql-go/graphql"
 
 var entertainmentTicketType *graphql.Object
 
+
 func GetEntertainmentTicketType() *graphql.Object{
 	if entertainmentTicketType == nil{
 		entertainmentTicketType = graphql.NewObject(graphql.ObjectConfig{
@@ -24,3 +25,4 @@ func GetEntertainmentTicketType() *graphql.Object{
 
 	return entertainmentTicketType
 }
+
