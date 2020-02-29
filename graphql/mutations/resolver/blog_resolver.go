@@ -19,3 +19,11 @@ func CreateBlog(p graphql.ResolveParams) (i interface{},e error){
 	return nil, nil
 
 }
+
+func DeleteBlog(p graphql.ResolveParams)(i interface{}, e error){
+	id:= p.Args["id"].(int)
+
+	models.DeleteBlog(id)
+
+	return nil, nil
+}

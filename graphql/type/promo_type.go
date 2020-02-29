@@ -2,20 +2,17 @@ package _type
 
 import "github.com/graphql-go/graphql"
 
-var blogType *graphql.Object
+var promoType *graphql.Object
 
-func GetBlogType() *graphql.Object{
-	if blogType == nil{
-		blogType = graphql.NewObject(graphql.ObjectConfig{
-			Name:"BlogType",
+func GetPromoType() *graphql.Object{
+	if promoType == nil{
+		promoType = graphql.NewObject(graphql.ObjectConfig{
+			Name:"PromoType",
 			Fields:graphql.Fields{
 				"id": &graphql.Field{
 					Type:graphql.Int,
 				},
 				"title": &graphql.Field{
-					Type:graphql.String,
-				},
-				"category": &graphql.Field{
 					Type:graphql.String,
 				},
 				"content": &graphql.Field{
@@ -24,9 +21,15 @@ func GetBlogType() *graphql.Object{
 				"image": &graphql.Field{
 					Type:graphql.String,
 				},
+				"code": &graphql.Field{
+					Type:graphql.String,
+				},
+				"description": &graphql.Field{
+					Type:graphql.String,
+				},
 			},
 		})
 	}
 
-	return blogType
+	return promoType
 }

@@ -101,3 +101,15 @@ func GetTrips(source string, destination string)([]Trip, error){
 
 	return trips, nil
 }
+
+func DeleteTrip(id int){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Where("id = ?", id).Delete(&Trip{})
+}

@@ -123,6 +123,50 @@ func GetRoot() *graphql.Object{
 				Resolve: res.DeleteEntertainment,
 				Description: "Delete Entertainment",
 			},
+			"deleteblog":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.DeleteBlog,
+				Description: "Delete Blog",
+			},
+			"deletetrip":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.DeleteTrip,
+				Description: "Delete Trip",
+			},
+			"deleteflight":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.DeleteFlight,
+				Description: "Delete Flight",
+			},
+			"deletehotel":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.DeleteHotel,
+				Description: "Delete Hotel",
+			},
 		},
 	})
 }

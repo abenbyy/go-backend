@@ -212,6 +212,49 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetBlog,
 				Description: "Get Blog by Id",
 			},
+			"allpromos":{
+				Type: graphql.NewList(typ.GetPromoType()),
+				Resolve: res.GetPromos,
+				Description: "Get All Promos",
+			},
+			"promo":{
+				Type: typ.GetPromoType(),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetPromo,
+				Description: "Get Promo by Id",
+			},
+			"otherpromos":{
+				Type: graphql.NewList(typ.GetPromoType()),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetOtherPromos,
+				Description: "Get Promo other than Id",
+			},
+			"admin":{
+				Type:typ.GetAdminType(),
+				Args:graphql.FieldConfigArgument{
+					"username": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"password": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+				},
+				Resolve: res.GetAdmin,
+				Description: "Get Admin using username and password",
+			},
+			"allflights":{
+				Type:graphql.NewList(typ.GetFlightType()),
+				Resolve: res.GetAllFlights,
+				Description: "Get All existing flights",
+			},
 		},
 	})
 }

@@ -172,6 +172,18 @@ func GetNearestHotels(latitude float64, longitude float64, amount int)([]Hotel, 
 	return res, nil
 }
 
+func DeleteHotel(id int){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Where("id = ?").Delete(&Hotel{})
+}
+
 func SeedHotelData(){
 	db, err := database.Connect()
 

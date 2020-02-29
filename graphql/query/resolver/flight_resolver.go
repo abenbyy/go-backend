@@ -5,6 +5,15 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+
+func GetAllFlights(p graphql.ResolveParams)(i interface{}, e error){
+	flights, err := models.GetAllFlights()
+
+	return flights, err
+
+
+}
+
 func GetFlights(p graphql.ResolveParams) (i interface{},e error){
 	source :=p.Args["source"].(string)
 	destination :=p.Args["destination"].(string)

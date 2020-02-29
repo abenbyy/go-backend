@@ -74,6 +74,219 @@ func init(){
 	db.Model(&FlightFacility{}).AddForeignKey("flight_refer","flights(id)","CASCADE","CASCADE")
 	db.Model(&FlightRoute{}).AddForeignKey("flight_route_refer","flights(id)","CASCADE","CASCADE")
 
+	SeedFlightData()
+}
+//
+//func SliceFlight(value []Flight, idx int)([]Flight){
+//	var result []Flight
+//	lim := 5
+//	i:= lim*idx
+//	offset:= i+lim
+//	for i < offset{
+//		result = append(result,value[i])
+//		i++
+//	}
+//	return result
+//}
+
+func GetAllFlights()([]Flight, error){
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var flights []Flight
+
+	db.Find(&flights)
+
+	return flights, nil
+}
+
+func GetFlights(source string, destination string)([]Flight,error){
+	db, err := database.Connect()
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var flights []Flight
+
+	db.Where("from_refer IN (?) AND to_refer IN (?)", db.Table("airports").Select("Id").Where("city = ?",source).SubQuery(), db.Table("airports").Select("Id").Where("city = ?",destination).SubQuery()).Preload("Facilities").Preload("Routes").Find(&flights)
+
+	for i,_ := range flights{
+
+		db.Model(flights[i]).Related(&flights[i].Airline,"airline_refer").Related(&flights[i].From,"from_refer").Related(&flights[i].To,"to_refer")
+	}
+
+
+	recentflight = flights
+
+	return flights,nil
+
+}
+
+func DeleteFlight(id int){
+	db, err:= database.Connect()
+
+	if err!= nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Where("id = ?",id).Delete(&Flight{})
+}
+
+func FilterFlights(reqairlines interface{},reqfacilities interface{}, reqdepartures interface{},reqarrivals interface{}, reqduration int)([]Flight, error){
+	db, err:= database.Connect()
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+	rairlines:= reqairlines.([]interface{})
+	rfacilities:= reqfacilities.([]interface{})
+	rdepartures:= reqdepartures.([]interface{})
+	rarrivals:= reqarrivals.([]interface{})
+	fmt.Println("From model:")
+	fmt.Println(rdepartures)
+	fmt.Println(rarrivals)
+
+
+	if len(rairlines) == 0 && len(rfacilities)==0 && len(rdepartures)==0 && len(rarrivals)==0 && reqduration == 0{
+		return recentflight,nil
+	}
+
+	var finalFlights []Flight
+
+	temp := recentflight
+
+	var airlinefiltered []Flight
+
+	if len(rairlines)>0 {
+		for i,_:= range temp{
+			for j,_:= range rairlines{
+				if temp[i].Airline.Name == rairlines[j]{
+					airlinefiltered = append(airlinefiltered, temp[i])
+				}
+			}
+
+		}
+	}else{
+		airlinefiltered = temp
+	}
+	fmt.Println("Airline filter pass")
+	//fmt.Println(airlinefiltered)
+	var facilityfiltered []Flight
+
+	if len(rfacilities)> 0 {
+		for i,_ :=range airlinefiltered{
+			count:=0
+			for j,_:= range airlinefiltered[i].Facilities{
+
+				for k,_ :=range rfacilities{
+					if airlinefiltered[i].Facilities[j].Name == rfacilities[k]{
+						count++
+					}
+				}
+
+			}
+			if count >= len(rfacilities){
+				facilityfiltered = append(facilityfiltered,airlinefiltered[i])
+			}
+		}
+	}else{
+		facilityfiltered = airlinefiltered
+	}
+	fmt.Println("Facility filter pass")
+	var departurefiltered []Flight
+
+	if len(rdepartures) > 0{
+		for i,_ := range facilityfiltered{
+			for j,_:= range rdepartures{
+				if facilityfiltered[i].Departure.Hour() >= rdepartures[j].(int) && facilityfiltered[i].Departure.Hour() <= (rdepartures[j].(int)+6) {
+					departurefiltered = append(departurefiltered,facilityfiltered[i])
+					break
+				}
+			}
+		}
+	}else{
+		departurefiltered = facilityfiltered
+	}
+	fmt.Println("Departure filter pass")
+
+	var arrivalfiltered []Flight
+
+	if len(rarrivals) > 0{
+		for i,_ := range departurefiltered{
+			for j,_:= range rarrivals{
+				if departurefiltered[i].Arrival.Hour() >= rarrivals[j].(int) && departurefiltered[i].Arrival.Hour() <= (rarrivals[j].(int)+6) {
+					arrivalfiltered = append(arrivalfiltered,departurefiltered[i])
+					break
+				}
+			}
+		}
+	}else{
+		arrivalfiltered = departurefiltered
+	}
+
+
+	var durationfiltered []Flight
+	if reqduration > 0{
+		for i,_ := range arrivalfiltered{
+			if arrivalfiltered[i].Duration <= reqduration*60{
+				durationfiltered = append(durationfiltered,arrivalfiltered[i])
+			}
+		}
+	}else{
+		durationfiltered = arrivalfiltered
+	}
+
+
+	finalFlights = durationfiltered
+
+	//var subq []Airline
+	//fmt.Println("asdasd:")
+	//fmt.Println(reqairlines)
+	//db.Where("name IN (?)", reqairlines).Find(&subq)
+	//fmt.Println("ids:")
+	//fmt.Println(subq)
+	//var subref [100]interface{}
+	//for i,_:=range subq{
+	//	subref[i] = subq[i].Id
+	//}
+	//fmt.Println(subref)
+	//db.Model(temp).Where("airline_refer IN (?)",db.Table("airlines").Select("id").Where("name IN (?)",reqairlines).SubQuery())
+	////db.Model(temp).Where("airline_refer IN (?)",subref).Find(&flights)
+	//for i,_ :=range subref{
+	//	fmt.Print("current number: ")
+	//	fmt.Println(subref[i])
+	//	if subref[i] == nil{
+	//		break
+	//	}
+	//	db.Where("airline_refer LIKE ?",subref[i]).Find(&flights)
+	//}
+	//fmt.Println("result:")
+	//fmt.Println(flights)
+
+	return finalFlights, nil
+
+
+}
+
+func SeedFlightData(){
+
+	db, err:= database.Connect()
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
 	db.Create(&Flight{
 
 		AirlineRefer:  2,
@@ -401,205 +614,4 @@ func init(){
 		AeroplaneType:    "Canadair Regional Jet 1000",
 		AeroplaneName:    "GA-180",
 	})
-	//var flight Flight
-	//
-	//var flights []Flight
-	//
-	//
-	//db.First(&flight).Related(&flight.Airline,"airline_refer")
-	//
-	//
-	//
-	//
-	//
-	//
-	//db.Find(&flights)
-	//for i, _ := range flights {
-	//	db.Model(flights[i]).Related(&flights[i].Airline,"airline_refer")
-	//}
-	//
-	//
-	//fmt.Println(flight.Airline)
-	//fmt.Println(flights)
-
-	//res,err2 := GetFlights("Jakarta","Singapore")
-	//if err2 != nil{
-	//	panic(err2)
-	//}
-	//
-	//fmt.Println(res)
-
-}
-//
-//func SliceFlight(value []Flight, idx int)([]Flight){
-//	var result []Flight
-//	lim := 5
-//	i:= lim*idx
-//	offset:= i+lim
-//	for i < offset{
-//		result = append(result,value[i])
-//		i++
-//	}
-//	return result
-//}
-
-func GetFlights(source string, destination string)([]Flight,error){
-	db, err := database.Connect()
-	if err != nil{
-		panic(err)
-	}
-
-	defer db.Close()
-
-	var flights []Flight
-
-	db.Where("from_refer IN (?) AND to_refer IN (?)", db.Table("airports").Select("Id").Where("city = ?",source).SubQuery(), db.Table("airports").Select("Id").Where("city = ?",destination).SubQuery()).Preload("Facilities").Preload("Routes").Find(&flights)
-
-	for i,_ := range flights{
-
-		db.Model(flights[i]).Related(&flights[i].Airline,"airline_refer").Related(&flights[i].From,"from_refer").Related(&flights[i].To,"to_refer")
-	}
-
-
-	recentflight = flights
-
-	return flights,nil
-
-}
-
-func FilterFlights(reqairlines interface{},reqfacilities interface{}, reqdepartures interface{},reqarrivals interface{}, reqduration int)([]Flight, error){
-	db, err:= database.Connect()
-	if err != nil{
-		panic(err)
-	}
-
-	defer db.Close()
-	rairlines:= reqairlines.([]interface{})
-	rfacilities:= reqfacilities.([]interface{})
-	rdepartures:= reqdepartures.([]interface{})
-	rarrivals:= reqarrivals.([]interface{})
-	fmt.Println("From model:")
-	fmt.Println(rdepartures)
-	fmt.Println(rarrivals)
-
-
-	if len(rairlines) == 0 && len(rfacilities)==0 && len(rdepartures)==0 && len(rarrivals)==0 && reqduration == 0{
-		return recentflight,nil
-	}
-
-	var finalFlights []Flight
-
-	temp := recentflight
-
-	var airlinefiltered []Flight
-
-	if len(rairlines)>0 {
-		for i,_:= range temp{
-			for j,_:= range rairlines{
-				if temp[i].Airline.Name == rairlines[j]{
-					airlinefiltered = append(airlinefiltered, temp[i])
-				}
-			}
-
-		}
-	}else{
-		airlinefiltered = temp
-	}
-	fmt.Println("Airline filter pass")
-	//fmt.Println(airlinefiltered)
-	var facilityfiltered []Flight
-
-	if len(rfacilities)> 0 {
-		for i,_ :=range airlinefiltered{
-			count:=0
-			for j,_:= range airlinefiltered[i].Facilities{
-
-				for k,_ :=range rfacilities{
-					if airlinefiltered[i].Facilities[j].Name == rfacilities[k]{
-						count++
-					}
-				}
-
-			}
-			if count >= len(rfacilities){
-				facilityfiltered = append(facilityfiltered,airlinefiltered[i])
-			}
-		}
-	}else{
-		facilityfiltered = airlinefiltered
-	}
-	fmt.Println("Facility filter pass")
-	var departurefiltered []Flight
-
-	if len(rdepartures) > 0{
-		for i,_ := range facilityfiltered{
-			for j,_:= range rdepartures{
-				if facilityfiltered[i].Departure.Hour() >= rdepartures[j].(int) && facilityfiltered[i].Departure.Hour() <= (rdepartures[j].(int)+6) {
-					departurefiltered = append(departurefiltered,facilityfiltered[i])
-					break
-				}
-			}
-		}
-	}else{
-		departurefiltered = facilityfiltered
-	}
-	fmt.Println("Departure filter pass")
-
-	var arrivalfiltered []Flight
-
-	if len(rarrivals) > 0{
-		for i,_ := range departurefiltered{
-			for j,_:= range rarrivals{
-				if departurefiltered[i].Arrival.Hour() >= rarrivals[j].(int) && departurefiltered[i].Arrival.Hour() <= (rarrivals[j].(int)+6) {
-					arrivalfiltered = append(arrivalfiltered,departurefiltered[i])
-					break
-				}
-			}
-		}
-	}else{
-		arrivalfiltered = departurefiltered
-	}
-
-
-	var durationfiltered []Flight
-	if reqduration > 0{
-		for i,_ := range arrivalfiltered{
-			if arrivalfiltered[i].Duration <= reqduration*60{
-				durationfiltered = append(durationfiltered,arrivalfiltered[i])
-			}
-		}
-	}else{
-		durationfiltered = arrivalfiltered
-	}
-
-
-	finalFlights = durationfiltered
-
-	//var subq []Airline
-	//fmt.Println("asdasd:")
-	//fmt.Println(reqairlines)
-	//db.Where("name IN (?)", reqairlines).Find(&subq)
-	//fmt.Println("ids:")
-	//fmt.Println(subq)
-	//var subref [100]interface{}
-	//for i,_:=range subq{
-	//	subref[i] = subq[i].Id
-	//}
-	//fmt.Println(subref)
-	//db.Model(temp).Where("airline_refer IN (?)",db.Table("airlines").Select("id").Where("name IN (?)",reqairlines).SubQuery())
-	////db.Model(temp).Where("airline_refer IN (?)",subref).Find(&flights)
-	//for i,_ :=range subref{
-	//	fmt.Print("current number: ")
-	//	fmt.Println(subref[i])
-	//	if subref[i] == nil{
-	//		break
-	//	}
-	//	db.Where("airline_refer LIKE ?",subref[i]).Find(&flights)
-	//}
-	//fmt.Println("result:")
-	//fmt.Println(flights)
-
-	return finalFlights, nil
-
-
 }
