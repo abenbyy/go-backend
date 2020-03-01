@@ -8,9 +8,15 @@ import(
 func CreateBlog(p graphql.ResolveParams) (i interface{},e error){
 	title:=p.Args["title"].(string)
 	content:=p.Args["content"].(string)
+	category:=p.Args["category"].(string)
 	image:=p.Args["image"].(string)
 
-	err := models.CreateBlog(title,content,image)
+
+	if title == "" || content == "" || category == ""{
+		return nil, nil
+	}
+
+	err := models.CreateBlog(title, category,content,image)
 
 	if err!=nil{
 		panic(err)

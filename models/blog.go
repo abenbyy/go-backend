@@ -7,7 +7,7 @@ type Blog struct{
 	Title		string
 	Category 	string
 	Content 	string	`gorm:"type:text;"`
-	Image   	string
+	Image   	string  `gorm:"type:text;"`
 	Viewer		int
 }
 
@@ -74,7 +74,7 @@ func GetPopularBlogs()([]Blog, error){
 
 }
 
-func CreateBlog(title string, content string, image string)(error){
+func CreateBlog(title string, category string, content string, image string)(error){
 	db, err:= database.Connect()
 
 	if err!=nil{
@@ -85,6 +85,7 @@ func CreateBlog(title string, content string, image string)(error){
 
 	db.Save(&Blog{
 		Title:   title,
+		Category: category,
 		Content: content,
 		Image:   image,
 		Viewer:  0,

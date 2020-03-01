@@ -44,6 +44,10 @@ func GetRoot() *graphql.Object{
 						Type: graphql.String,
 
 					},
+					"category": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
 					"content": &graphql.ArgumentConfig{
 						Type: graphql.String,
 
