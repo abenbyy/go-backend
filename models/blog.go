@@ -94,6 +94,27 @@ func CreateBlog(title string, category string, content string, image string)(err
 	return nil
 }
 
+func UpdateBlog(id int, bl Blog){
+
+	db, err:= database.Connect()
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+
+	db.Model(&Blog{}).Where("id = ?", id).Updates(Blog{
+		Title:    bl.Title,
+		Category: bl.Category,
+		Content:  bl.Content,
+		Image:    bl.Image,
+	})
+
+
+
+}
+
 func DeleteBlog(id int){
 	db, err:= database.Connect()
 

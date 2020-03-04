@@ -11,15 +11,20 @@ func CreateEntertainment(p graphql.ResolveParams) (i interface{},e error){
 	name:= p.Args["name"].(string)
 	etype:= p.Args["type"].(string)
 	address:= p.Args["address"].(string)
-	needate:= p.Args["needate"].(bool)
+	image:= p.Args["image"].(string)
+	startdate:= p.Args["startdate"].(string)
 	latitude:= p.Args["latitude"].(float64)
 	longitude:= p.Args["longitude"].(float64)
+
+	description:= p.Args["description"].(string)
+	terms:= p.Args["terms"].(string)
 
 	ticketname := p.Args["ticket_name"].([]interface{})
 	ticketprice := p.Args["ticket_price"].([]interface{})
 
-
-
+	if name ==""||etype == ""||address==""||image==""||startdate==""||description==""||terms==""|| len(ticketprice)==0||len(ticketname) ==0{
+		return nil, nil
+	}
 
 	var tickets []models.EntertainmentTicket
 	tickets = nil
@@ -34,12 +39,16 @@ func CreateEntertainment(p graphql.ResolveParams) (i interface{},e error){
 	ent := models.Entertainment{
 		Name:      name,
 		Type:      etype,
+		Image: image,
 		IsTrend:   false,
 		IsBest:    false,
 		Address:   address,
-		NeedDate:  needate,
+		NeedDate:  false,
+		StartDate: startdate,
 		Latitude:  latitude,
 		Longitude: longitude,
+		Description: description,
+		Terms: terms,
 	}
 
 
@@ -55,15 +64,28 @@ func UpdateEntertainment(p graphql.ResolveParams)(i interface{}, e error){
 	name:= p.Args["name"].(string)
 	etype:= p.Args["type"].(string)
 	address:= p.Args["address"].(string)
+	startdate:= p.Args["startdate"].(string)
 	latitude:= p.Args["latitude"].(float64)
 	longitude:= p.Args["longitude"].(float64)
+	description:= p.Args["description"].(string)
+	terms:= p.Args["terms"].(string)
+	image:= p.Args["image"].(string)
+
+
+	if id<=0||name ==""||etype == ""||address==""||image==""||startdate==""||description==""||terms==""{
+		return nil, nil
+	}
 
 	ent := models.Entertainment{
 		Name:      name,
 		Type:      etype,
+		Image:     image,
 		Address:   address,
+		StartDate: startdate,
 		Latitude:  latitude,
 		Longitude: longitude,
+		Description: description,
+		Terms: terms,
 
 	}
 

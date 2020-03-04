@@ -9,17 +9,17 @@ import (
 type Trip struct{
 	Id					int 		`gorm:primary_key`
 	Train				Train		`gorm:"foreignkey:TrainRefer"`
-	TrainRefer  		uint
+	TrainRefer  		int
 	From				Station		`gorm:"foreignkey:FromRefer"`
-	FromRefer			uint
+	FromRefer			int
 	To					Station		`gorm:"foreignkey:ToRefer"`
-	ToRefer				uint
+	ToRefer				int
 	Departure			time.Time
 	Arrival				time.Time
-	Duration			uint
-	Price				uint
-	Tax					uint
-	Service				uint
+	Duration			int
+	Price				int
+	Tax					int
+	Service				int
 
 	CreatedAt			time.Time
 	UpdatedAt			time.Time
@@ -39,6 +39,128 @@ func init(){
 
 	db.AutoMigrate(&Trip{}).AddForeignKey("train_refer","trains(Id)","CASCADE","CASCADE").AddForeignKey("from_refer","stations(Id)","CASCADE","CASCADE").AddForeignKey("to_refer","stations(Id)","CASCADE","CASCADE")
 
+	SeedTripData()
+
+}
+
+func GetAllTrips()([]Trip){
+
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var trips []Trip
+
+	db.Find(&trips)
+
+	for i,_ :=range trips{
+		db.Model(trips[i]).Related(&trips[i].Train,"train_refer").Related(&trips[i].From,"from_refer").Related(&trips[i].To,"to_refer")
+	}
+
+	return trips
+}
+func GetTrip(id int)(Trip){
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var trip Trip
+
+	db.Where("id = ?",id).First(&trip)
+
+	db.Model(trip).Related(&trip.Train,"train_refer").Related(&trip.From,"from_refer").Related(&trip.To,"to_refer")
+
+	return trip
+
+}
+
+func GetTrips(source string, destination string)([]Trip, error){
+	db, err := database.Connect()
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var trips []Trip
+
+	//fmt.Println(db.Table("stations").Select("Id").Where("city = ?",source))
+	//fmt.Println(db.Table("stations").Select("Id").Where("city = ?",destination))
+
+	db.Where("from_refer IN (?) AND to_refer IN (?)", db.Table("stations").Select("Id").Where("city = ?",source).SubQuery(), db.Table("stations").Select("Id").Where("city = ?",destination).SubQuery()).Find(&trips)
+
+
+	for i,_ :=range trips{
+		db.Model(trips[i]).Related(&trips[i].Train,"train_refer").Related(&trips[i].From,"from_refer").Related(&trips[i].To,"to_refer")
+	}
+
+	fmt.Println(trips)
+
+	return trips, nil
+}
+
+
+func CreateTrip(t Trip){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Create(&t)
+
+
+}
+
+func UpdateTrip(id int,t Trip){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Model(&Trip{}).Where("id = ?",id).Updates(Trip{
+		TrainRefer: t.TrainRefer,
+		FromRefer:  t.FromRefer,
+		ToRefer:    t.ToRefer,
+		Duration:   t.Duration,
+		Price:      t.Price,
+
+	})
+
+}
+func DeleteTrip(id int){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Where("id = ?", id).Delete(&Trip{})
+}
+
+func SeedTripData(){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
 
 	db.Create(&Trip{
 		TrainRefer: 1,
@@ -75,41 +197,4 @@ func init(){
 		Tax:        10000,
 		Service:    0,
 	})
-}
-
-func GetTrips(source string, destination string)([]Trip, error){
-	db, err := database.Connect()
-	if err!=nil{
-		panic(err)
-	}
-
-	defer db.Close()
-
-	var trips []Trip
-
-	//fmt.Println(db.Table("stations").Select("Id").Where("city = ?",source))
-	//fmt.Println(db.Table("stations").Select("Id").Where("city = ?",destination))
-
-	db.Where("from_refer IN (?) AND to_refer IN (?)", db.Table("stations").Select("Id").Where("city = ?",source).SubQuery(), db.Table("stations").Select("Id").Where("city = ?",destination).SubQuery()).Find(&trips)
-
-
-	for i,_ :=range trips{
-		db.Model(trips[i]).Related(&trips[i].Train,"train_refer").Related(&trips[i].From,"from_refer").Related(&trips[i].To,"to_refer")
-	}
-
-	fmt.Println(trips)
-
-	return trips, nil
-}
-
-func DeleteTrip(id int){
-	db, err:= database.Connect()
-
-	if err!=nil{
-		panic(err)
-	}
-
-	defer db.Close()
-
-	db.Where("id = ?", id).Delete(&Trip{})
 }

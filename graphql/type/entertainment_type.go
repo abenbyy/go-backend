@@ -15,6 +15,9 @@ func GetEntertainmentType() *graphql.Object{
 				"name": &graphql.Field{
 					Type:graphql.String,
 				},
+				"image": &graphql.Field{
+					Type:graphql.String,
+				},
 				"type": &graphql.Field{
 					Type:graphql.String,
 				},
@@ -32,6 +35,12 @@ func GetEntertainmentType() *graphql.Object{
 				},
 				"longitude": &graphql.Field{
 					Type:graphql.Float,
+				},
+				"description": &graphql.Field{
+					Type:graphql.String,
+				},
+				"terms": &graphql.Field{
+					Type:graphql.String,
 				},
 			},
 		})

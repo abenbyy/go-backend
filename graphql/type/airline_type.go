@@ -12,6 +12,9 @@ func GetAirlineType() *graphql.Object{
 				"id": &graphql.Field{
 					Type:graphql.Int,
 				},
+				"image": &graphql.Field{
+					Type:graphql.String,
+				},
 				"name": &graphql.Field{
 					Type:graphql.String,
 				},

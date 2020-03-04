@@ -9,7 +9,8 @@ type Hotel struct{
 	Id 				int				`gorm: primary_key`
 	Name 			string			`gorm:"type:varchar(100);not null"`
 	Address			string			`gorm:"type:varchar(100);not null"`
-	Rating			float32
+	Rating			float64
+	Image			string			`gorm:"type:text"`
 	Star			int
 	LocationRate	int
 	CleanRate		int
@@ -31,7 +32,7 @@ type Hotel struct{
 
 type HotelFacility struct{
 	Id					int
-	HotelFacilityRefer	uint
+	HotelFacilityRefer	int
 	AC					bool
 	Parking				bool
 	Receptionist		bool
@@ -49,6 +50,7 @@ type HotelRoom struct {
 	Id				int			`gorm: primary_key`
 	HotelRoomRefer	uint
 	Name			string
+	Image			string
 	MaxGuest		int
 	RoomSize		int
 	BedDetail		string
@@ -99,6 +101,99 @@ func init(){
 
 var recenthotels []Hotel
 
+
+func GetAllHotels()([]Hotel){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var hotels []Hotel
+
+	db.Find(&hotels)
+
+	return hotels
+}
+
+
+func GetHotel(id int)(Hotel){
+	db, err:= database.Connect()
+	
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var hotel Hotel
+
+	db.Where("id = ?",id).Preload("Rooms").Preload("Facilities").Preload("Reviews").First(&hotel)
+
+	return hotel
+}
+
+func CreateHotel(hotel Hotel, facility HotelFacility){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Create(&hotel)
+
+	var newhot Hotel
+
+	db.Where("name = ?", hotel.Name).First(&newhot)
+
+	facility.HotelFacilityRefer = newhot.Id
+
+	db.Create(&facility)
+
+	return
+
+}
+
+func UpdateHotel(id int, hotel Hotel, facility HotelFacility){
+	db, err:= database.Connect()
+
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Model(&Hotel{}).Where("id = ?",id).Updates(Hotel{
+
+		Name:         hotel.Name,
+		Address:      hotel.Address,
+		Rating:       hotel.Rating,
+		Image:        hotel.Image,
+		Area:         hotel.Area,
+		City:         hotel.City,
+		Province:     hotel.Province,
+		Latitude:     hotel.Latitude,
+		Longitude:    hotel.Longitude,
+	})
+
+	db.Model(&HotelFacility{}).Where("hotel_facility_refer = ?",id).Updates(HotelFacility{
+		AC:                 facility.AC,
+		Parking:            facility.Parking,
+		Receptionist:       facility.Receptionist,
+		Pool:               facility.Pool,
+		Lift:               facility.Lift,
+		Restaurant:         facility.Restaurant,
+		Wifi:               facility.Wifi,
+		Spa:                facility.Spa,
+	})
+
+	return
+
+}
 func GetHotels(city string)([]Hotel,error){
 
 	db,err:=database.Connect()
@@ -181,7 +276,7 @@ func DeleteHotel(id int){
 
 	defer db.Close()
 
-	db.Where("id = ?").Delete(&Hotel{})
+	db.Where("id = ?", id).Delete(&Hotel{})
 }
 
 func SeedHotelData(){
@@ -193,8 +288,9 @@ func SeedHotelData(){
 	defer db.Close()
 
 	db.Create(&Hotel{
-		Id:			1,
+
 		Name:       "RedDoorz GBK Senayan",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jl. Palmerah Barat No.110, Palmerah, Kec. Palmerah, Jakarta Barat, Jakarta 11480",
 		Rating:     9.3,
 		Star:		3,
@@ -361,8 +457,9 @@ func SeedHotelData(){
 
 
 	db.Create(&Hotel{
-		Id:			2,
+
 		Name:       "Kempinski Hotel Jakarta",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jalan M.H. Thamrin No.1, RT.1/RW.5, Menteng, Menteng, Jakarta Pusat, 10310",
 		Rating:     9.5,
 		Star:		5,
@@ -428,8 +525,9 @@ func SeedHotelData(){
 
 
 	db.Create(&Hotel{
-		Id:			3,
+
 		Name:       "The Media Hotel Towers",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jalan Gunung Sahari Raya No. 3",
 		Rating:     7.8,
 		Star:		5,
@@ -506,8 +604,9 @@ func SeedHotelData(){
 	})
 
 	db.Create(&Hotel{
-		Id:			4,
+
 		Name:       "Aryaduta Suite Semanggi",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Garnisun Dalam No.8 Street Karet Semanggi",
 		Rating:     8.7,
 		Star:		4,
@@ -596,8 +695,9 @@ func SeedHotelData(){
 	})
 
 	db.Create(&Hotel{
-		Id:			5,
+
 		Name:       "Artotel Thamrin Jakarta",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jl. Sunda No. 3 - Thamrin Jakarta pusat",
 		Rating:     8.7,
 		Star:		3,
@@ -663,8 +763,9 @@ func SeedHotelData(){
 
 
 	db.Create(&Hotel{
-		Id:			6,
+
 		Name:       "Oasis Amir Hotel",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jalan Senen Raya Kav. 135 - 137",
 		Rating:    	7.5,
 		Star:		4,
@@ -753,8 +854,9 @@ func SeedHotelData(){
 	})
 
 	db.Create(&Hotel{
-		Id:			7,
+
 		Name:       "Ashley Hotel Sabang",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jl. H. Agus Salim No.22ab, RT.2/RW.1, Kb. Sirih, Menteng, Jakarta 10340, Indonesia",
 		Rating:    	8.6,
 		Star:		4,
@@ -831,8 +933,9 @@ func SeedHotelData(){
 	})
 
 	db.Create(&Hotel{
-		Id:			8,
+
 		Name:       "Century Park Hotel",
+		Image:      "../../../assets/images/hotel.jpg",
 		Address:    "Jalan Pintu Satu Senayan, Daerah Khusus Ibukota Jakarta 10270, Indonesia",
 		Rating:    	8.8,
 		Star:		4,

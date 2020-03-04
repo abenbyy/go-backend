@@ -13,10 +13,14 @@ type Entertainment struct {
 	IsTrend		bool
 	IsBest		bool
 	Address 	string
+	Image		string	`gorm:"type:text;"`
+	StartDate   string
 	NeedDate	bool
 	Tickets		[]EntertainmentTicket	`gorm:"foreignkey:TicketRefer"`
 	Latitude	float64
 	Longitude	float64
+	Description string
+	Terms		string
 	CreatedAt	time.Time
 	UpdatedAt	time.Time
 	DeletedAt	*time.Time
@@ -53,6 +57,37 @@ func init(){
 
 
 	SeedEntertainmentData()
+}
+
+func GetEntertainment(id int)(Entertainment){
+	db, err:= database.Connect()
+
+	if err !=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var ent Entertainment
+
+	db.Where("id = ?", id).Preload("Tickets").First(&ent)
+
+	return ent
+}
+func GetAllEntertainments()([]Entertainment){
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var ent []Entertainment
+
+	db.Preload("Tickets").Find(&ent)
+
+	return ent
 }
 
 func GetEntertainments(enttype string)([]Entertainment, error){
@@ -114,7 +149,7 @@ func CreateEntertainment(ent Entertainment, tickets []EntertainmentTicket){
 
 	var newent Entertainment
 	db.Where("name = ? ",ent.Name).First(&newent)
-	fmt.Println(newent)
+	//fmt.Println(newent)
 	CreateTicket(newent.Id, tickets)
 }
 
@@ -157,9 +192,13 @@ func UpdateEntertainment(id int, ent Entertainment)(e error){
 	fail := db.Model(&Entertainment{}).Where("id = ?",id).Updates(Entertainment{
 		Name:      ent.Name,
 		Type:      ent.Type,
+		Image: 	   ent.Image,
 		Address:   ent.Address,
+		StartDate: ent.StartDate,
 		Latitude:  ent.Latitude,
 		Longitude: ent.Longitude,
+		Description: ent.Description,
+		Terms: ent.Terms,
 	}).Error
 
 	return fail
@@ -202,11 +241,15 @@ func SeedEntertainmentData(){
 		Name:      "Spa Bali Oddysey",
 		Type:      "Activity",
 		Address:   "Jl. Ranggagading No.3, Tamansari",
+		Image: 	   "../../../assets/images/activity.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    false,
 		Latitude:  -6.902478599999999,
 		Longitude: 107.60972979999997,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 1,
@@ -230,11 +273,15 @@ func SeedEntertainmentData(){
 		Name:      "Osaka Amazing Pass Tickets",
 		Type:      "Activity",
 		Address:   "Osaka, Japan",
+		Image: 	   "../../../assets/images/activity.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:     true,
 		Latitude:  34.7923196,
 		Longitude: 135.4390672,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 2,
@@ -253,11 +300,15 @@ func SeedEntertainmentData(){
 		Name:      "Kelor Island Tour Packages",
 		Type:      "Activity",
 		Address:   "Kepulauan Seribu, Indonesia",
+		Image: 	   "../../../assets/images/activity.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    true,
 		Latitude:  -5.6122404,
 		Longitude: 106.61699640,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 3,
@@ -271,11 +322,15 @@ func SeedEntertainmentData(){
 		Name:      "Spa Bali Oddysey",
 		Type:      "Activity",
 		Address:   "Jl. Ranggagading No.3, Tamansari",
+		Image: 	   "../../../assets/images/activity.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -6.902478599999999,
 		Longitude: 107.60972979999997,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 4,
@@ -299,11 +354,15 @@ func SeedEntertainmentData(){
 		Name:      "Osaka Amazing Pass Tickets",
 		Type:      "Activity",
 		Address:   "Osaka, Japan",
+		Image: 	   "../../../assets/images/activity.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:     false,
 		Latitude:  34.7923196,
 		Longitude: 135.4390672,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 5,
@@ -322,11 +381,15 @@ func SeedEntertainmentData(){
 		Name:      "Kelor Island Tour Packages",
 		Type:      "Activity",
 		Address:   "Kepulauan Seribu, Indonesia",
+		Image: 	   "../../../assets/images/activity.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -5.6122404,
 		Longitude: 106.61699640,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 6,
@@ -339,11 +402,15 @@ func SeedEntertainmentData(){
 		Name:      "Timezone Lippo Mall Puri",
 		Type:      "Attraction",
 		Address:   "Lippo Mall Puri, Jalan Puri Indah Raya, RT.3/RW.2",
+		Image: 	   "../../../assets/images/attraction.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    false,
 		Latitude:  -6.1878581,
 		Longitude: 106.73871800,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 7,
@@ -356,11 +423,15 @@ func SeedEntertainmentData(){
 		Name:      "KIDZANIA JAKARTA",
 		Type:      "Attraction",
 		Address:   "Pacific Place Mall, Sudirman Central Business District",
+		Image: 	   "../../../assets/images/attraction.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    false,
 		Latitude:  -6.2240509,
 		Longitude: 106.8098201000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 8,
@@ -379,11 +450,15 @@ func SeedEntertainmentData(){
 		Name:      "Trans Studio Bandung",
 		Type:      "Attraction",
 		Address:   "Trans Studio Bandung, Jalan Gatot Subroto",
+		Image: 	   "../../../assets/images/attraction.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    true,
 		Latitude:  -6.92506319999,
 		Longitude: 107.6365103000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 9,
@@ -396,11 +471,15 @@ func SeedEntertainmentData(){
 		Name:      "Timezone Lippo Mall Puri",
 		Type:      "Attraction",
 		Address:   "Lippo Mall Puri, Jalan Puri Indah Raya, RT.3/RW.2",
+		Image: 	   "../../../assets/images/attraction.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -6.1878581,
 		Longitude: 106.73871800,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 10,
@@ -413,11 +492,15 @@ func SeedEntertainmentData(){
 		Name:      "KIDZANIA JAKARTA",
 		Type:      "Attraction",
 		Address:   "Pacific Place Mall, Sudirman Central Business District",
+		Image: 	   "../../../assets/images/attraction.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -6.2240509,
 		Longitude: 106.8098201000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 11,
@@ -436,11 +519,15 @@ func SeedEntertainmentData(){
 		Name:      "Trans Studio Bandung",
 		Type:      "Attraction",
 		Address:   "Trans Studio Bandung, Jalan Gatot Subroto",
+		Image: 	   "../../../assets/images/attraction.jpg",
 		NeedDate:  true,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -6.92506319999,
 		Longitude: 107.6365103000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 12,
@@ -453,11 +540,15 @@ func SeedEntertainmentData(){
 		Name:      "Head in the Clouds Jakarta",
 		Type:      "Event",
 		Address:   "JIExpo Kemayoran, Jalan Rajawali Selatan Raya, RT.2/RW.6",
+		Image: 	   "../../../assets/images/event.jpg",
 		NeedDate:  false,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    true,
 		Latitude:  -6.1463445,
 		Longitude: 106.84581630000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 13,
@@ -480,11 +571,15 @@ func SeedEntertainmentData(){
 		Name:      "Asian Sound Syndicate",
 		Type:      "Event",
 		Address:   "Helipad Parking Ground, Jl. Pintu Satu Senayan",
+		Image: 	   "../../../assets/images/event.jpg",
 		NeedDate:  false,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    true,
 		Latitude:  -6.21493429999,
 		Longitude: 106.80010319999,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 14,
@@ -508,11 +603,15 @@ func SeedEntertainmentData(){
 		Name:      "Music Blast Live 2020",
 		Type:      "Event",
 		Address:   "Revo Town Bekasi",
+		Image: 	   "../../../assets/images/event.jpg",
 		NeedDate:  false,
+		StartDate: "30 Mar 2020",
 		IsTrend:   true,
 		IsBest:    false,
 		Latitude:  37.7749295,
 		Longitude: -122.4194155000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 15,
@@ -526,11 +625,15 @@ func SeedEntertainmentData(){
 		Name:      "Head in the Clouds Jakarta",
 		Type:      "Event",
 		Address:   "JIExpo Kemayoran, Jalan Rajawali Selatan Raya, RT.2/RW.6",
+		Image: 	   "../../../assets/images/event.jpg",
 		NeedDate:  false,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -6.1463445,
 		Longitude: 106.84581630000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 16,
@@ -553,11 +656,15 @@ func SeedEntertainmentData(){
 		Name:      "Asian Sound Syndicate",
 		Type:      "Event",
 		Address:   "Helipad Parking Ground, Jl. Pintu Satu Senayan",
+		Image: 	   "../../../assets/images/event.jpg",
 		NeedDate:  false,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  -6.21493429999,
 		Longitude: 106.80010319999,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 17,
@@ -581,11 +688,15 @@ func SeedEntertainmentData(){
 		Name:      "Music Blast Live 2020",
 		Type:      "Event",
 		Address:   "Revo Town Bekasi",
+		Image: 	   "../../../assets/images/event.jpg",
 		NeedDate:  false,
+		StartDate: "30 Mar 2020",
 		IsTrend:   false,
 		IsBest:    false,
 		Latitude:  37.7749295,
 		Longitude: -122.4194155000,
+		Description: "Sample Description",
+		Terms: "Sample Terms",
 	})
 	db.Create(&EntertainmentTicket{
 		TicketRefer: 18,

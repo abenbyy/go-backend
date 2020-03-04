@@ -15,6 +15,9 @@ func GetHotelType() *graphql.Object{
 				"name": &graphql.Field{
 					Type:graphql.String,
 				},
+				"image": &graphql.Field{
+					Type:graphql.String,
+				},
 				"address": &graphql.Field{
 					Type:graphql.String,
 				},

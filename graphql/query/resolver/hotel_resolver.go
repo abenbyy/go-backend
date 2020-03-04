@@ -5,6 +5,21 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+
+func GetHotel(p graphql.ResolveParams)(i interface{}, e error){
+	id:= p.Args["id"].(int)
+
+	hotel:= models.GetHotel(id)
+
+	return hotel, nil
+}
+func GetAllHotels(p graphql.ResolveParams)(i interface{}, e error){
+
+	hotels:= models.GetAllHotels()
+
+
+	return hotels, nil
+}
 func GetHotels(p graphql.ResolveParams) (i interface{},e error){
 	city :=p.Args["city"].(string)
 

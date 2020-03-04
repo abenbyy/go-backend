@@ -37,6 +37,53 @@ func GetRoot() *graphql.Object{
 				Resolve: res.CreateUser,
 				Description: "Get User Based on Email",
 			},
+			"updateuser":{
+				Type: typ.GetUserType(),
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"firstname": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"lastname": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"email": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"phone": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"city": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"address": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"postcode": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"language": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"currency": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+				},
+				Resolve: res.UpdateUser,
+				Description: "Update User",
+			},
 			"createblog":{
 				Type: typ.GetBlogType(),
 				Args: graphql.FieldConfigArgument{
@@ -60,10 +107,40 @@ func GetRoot() *graphql.Object{
 				Resolve: res.CreateBlog,
 				Description: "Create Blog",
 			},
+			"updateblog":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"title": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"category": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"content": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+					"image": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+				},
+				Resolve: res.UpdateBlog,
+				Description: "Update Blog",
+			},
 			"createentertainment":{
 				Type:graphql.String,
 				Args: graphql.FieldConfigArgument{
 					"name": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"image": &graphql.ArgumentConfig{
 						Type: graphql.String,
 					},
 					"type": &graphql.ArgumentConfig{
@@ -72,14 +149,20 @@ func GetRoot() *graphql.Object{
 					"address": &graphql.ArgumentConfig{
 						Type: graphql.String,
 					},
-					"needate": &graphql.ArgumentConfig{
-						Type: graphql.Boolean,
+					"startdate": &graphql.ArgumentConfig{
+						Type: graphql.String,
 					},
 					"latitude": &graphql.ArgumentConfig{
 						Type: graphql.Float,
 					},
 					"longitude": &graphql.ArgumentConfig{
 						Type: graphql.Float,
+					},
+					"description": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"terms": &graphql.ArgumentConfig{
+						Type: graphql.String,
 					},
 					"ticket_name": &graphql.ArgumentConfig{
 						Type: graphql.NewList(graphql.String),
@@ -97,6 +180,9 @@ func GetRoot() *graphql.Object{
 					"id": &graphql.ArgumentConfig{
 						Type: graphql.Int,
 					},
+					"image": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
 					"name": &graphql.ArgumentConfig{
 						Type: graphql.String,
 					},
@@ -106,11 +192,20 @@ func GetRoot() *graphql.Object{
 					"address": &graphql.ArgumentConfig{
 						Type: graphql.String,
 					},
+					"startdate": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
 					"latitude": &graphql.ArgumentConfig{
 						Type: graphql.Float,
 					},
 					"longitude": &graphql.ArgumentConfig{
 						Type: graphql.Float,
+					},
+					"description": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"terms": &graphql.ArgumentConfig{
+						Type: graphql.String,
 					},
 				},
 				Resolve: res.UpdateEntertainment,
@@ -160,6 +255,83 @@ func GetRoot() *graphql.Object{
 				Resolve: res.DeleteFlight,
 				Description: "Delete Flight",
 			},
+			"createhotel":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"name": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"address": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"rating": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"image": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"area": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"city": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"province": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"latitude": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"longitude": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"facilities": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.Boolean),
+					},
+				},
+				Resolve: res.CreateHotel,
+				Description: "Create Hotel",
+			},
+			"updatehotel":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+					"name": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"address": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"rating": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"image": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"area": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"city": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"province": &graphql.ArgumentConfig{
+						Type: graphql.String,
+					},
+					"latitude": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"longitude": &graphql.ArgumentConfig{
+						Type: graphql.Float,
+					},
+					"facilities": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.Boolean),
+					},
+				},
+				Resolve: res.UpdateHotel,
+				Description: "Update Hotel",
+			},
 			"deletehotel":{
 				Type: graphql.String,
 				Args: graphql.FieldConfigArgument{
@@ -170,6 +342,147 @@ func GetRoot() *graphql.Object{
 				},
 				Resolve: res.DeleteHotel,
 				Description: "Delete Hotel",
+			},
+			"createflight":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"airline_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"from_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"to_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"duration": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"price": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"rfrom": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.String),
+					},
+					"rfromcode": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.String),
+					},
+					"rto": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.String),
+					},
+					"rtocode": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.String),
+					},
+					"fdurations": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.Int),
+					},
+					"tdurations": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.Int),
+					},
+					"types": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.String),
+					},
+					"names": &graphql.ArgumentConfig{
+						Type: graphql.NewList(graphql.String),
+					},
+
+				},
+				Resolve: res.InsertFlight,
+				Description: "Create Flight",
+			},
+			"updateflight":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"airline_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"from_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"to_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"duration": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"price": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.UpdateFlight,
+				Description: "Update Flight",
+			},
+			"createtrip":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"train_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"from_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"to_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"duration": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"price": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.CreateTrip,
+				Description: "Create Train Trip",
+			},
+			"updatetrip":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"train_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"from_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"to_refer": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"duration": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"price": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.UpdateTrip,
+				Description: "Create Train Trip",
 			},
 		},
 	})

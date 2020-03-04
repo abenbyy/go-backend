@@ -20,6 +20,8 @@ type User struct{
 	City		string		`gorm: "type:varchar(100);"`
 	Address		string		`gorm: "type:varchar(100);"`
 	PostCode	string		`gorm: "type:varchar(100);"`
+	Language	string
+	Currency	string
 
 }
 
@@ -118,6 +120,9 @@ func CreateUser(firstname string, lastname string, password string, email string
 		Password: password,
 		Email:    email,
 		Phone:    phone,
+		Language: "ENG",
+		Currency: "IDR",
+
 	}
 	if db.NewRecord(user){
 		db.Create(&user)
@@ -128,3 +133,35 @@ func CreateUser(firstname string, lastname string, password string, email string
 
 
 }
+
+func UpdateDetail(id int,u User)(User){
+
+	db, err:= database.Connect()
+	if err!=nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Model(User{}).Where("id = ?",id).Updates(User{
+
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+
+		Email:     u.Email,
+		Phone:     u.Phone,
+		Title:     u.Title,
+		City:      u.City,
+		Address:   u.Address,
+		PostCode:  u.PostCode,
+		Language:  u.Language,
+		Currency:  u.Currency,
+	})
+
+	var user User
+
+	db.Where("id = ?",id).First(&user)
+
+	return user
+}
+

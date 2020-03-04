@@ -117,6 +117,21 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetTrips,
 				Description: "Search Trips",
 			},
+			"allhotels":{
+				Type: graphql.NewList(typ.GetHotelType()),
+				Resolve: res.GetAllHotels,
+				Description: "Get All Hotels",
+			},
+			"hotel":{
+				Type: typ.GetHotelType(),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetHotel,
+				Description: "Get Hotel by id",
+			},
 			"searchhotel":{
 				Type: graphql.NewList(typ.GetHotelType()),
 				Args:graphql.FieldConfigArgument{
@@ -163,7 +178,11 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetCars,
 				Description: "Search Cars",
 			},
-
+			"allentertainments":{
+				Type: graphql.NewList(typ.GetEntertainmentType()),
+				Resolve: res.GetAllEntertainments,
+				Description: "Get All Entertainments",
+			},
 			"searchentertainment":{
 				Type: graphql.NewList(typ.GetEntertainmentType()),
 				Args:graphql.FieldConfigArgument{
@@ -186,11 +205,22 @@ func GetRoot() *graphql.Object{
 				Description: "Get Trending Entertainments",
 			},
 
+			"entertainment":{
+				Type: typ.GetEntertainmentType(),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetEntertainment,
+				Description: "Get Entertainment by Id",
+			},
 			"bestentertainment":{
 				Type: graphql.NewList(typ.GetEntertainmentType()),
 				Resolve: res.GetBestEntertainment,
 				Description: "Get Best Entertainments",
 			},
+
 
 			"allblogs":{
 				Type: graphql.NewList(typ.GetBlogType()),
@@ -254,6 +284,31 @@ func GetRoot() *graphql.Object{
 				Type:graphql.NewList(typ.GetFlightType()),
 				Resolve: res.GetAllFlights,
 				Description: "Get All existing flights",
+			},
+			"flight":{
+				Type:typ.GetFlightType(),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetFlight,
+				Description: "Get flight by id",
+			},
+			"alltrips":{
+				Type: graphql.NewList(typ.GetTripType()),
+				Resolve: res.GetAllTrips,
+				Description: "Get All Trips",
+			},
+			"trip":{
+				Type: typ.GetTripType(),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetTrip,
+				Description: "Get Trip by id",
 			},
 		},
 	})

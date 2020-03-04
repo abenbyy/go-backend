@@ -9,11 +9,11 @@ import (
 type Flight struct {
 	Id				int			`gorm:primary_key`
 	Airline 		Airline		`gorm:"foreignkey:AirlineRefer"`
-	AirlineRefer	uint
+	AirlineRefer	int
 	From			Airport		`gorm:"foreignkey:FromRefer"`
-	FromRefer		uint
+	FromRefer		int
 	To				Airport		`gorm:"foreignkey:ToRefer"`
-	ToRefer			uint
+	ToRefer			int
 	Departure		time.Time
 	Arrival 		time.Time
 	Duration		int
@@ -39,13 +39,13 @@ type FlightFacility struct{
 
 type FlightRoute struct{
 	Id			int
-	FlightRouteRefer	uint
+	FlightRouteRefer	int
 	From		string
 	FromCode	string
 	To			string
 	ToCode		string
-	FlightDuration	uint
-	TransitDuration	uint
+	FlightDuration	int
+	TransitDuration	int
 	AeroplaneType	string
 	AeroplaneName	string
 	CreatedAt 	time.Time
@@ -67,6 +67,10 @@ func init(){
 	db.DropTableIfExists(&FlightFacility{})
 	db.DropTableIfExists(&Flight{})
 
+	db.DropTableIfExists(&Airline{})
+	db.AutoMigrate(&Airline{})
+
+	SeedAirlineData()
 
 	db.AutoMigrate(&Flight{}).AddForeignKey("airline_refer","airlines(Id)","CASCADE","CASCADE").AddForeignKey("from_refer","airports(Id)","CASCADE","CASCADE").AddForeignKey("to_refer","airports(Id)","CASCADE","CASCADE")
 	db.AutoMigrate(&FlightFacility{})
@@ -101,8 +105,31 @@ func GetAllFlights()([]Flight, error){
 	var flights []Flight
 
 	db.Find(&flights)
+	for i,_ := range flights{
+
+		db.Model(flights[i]).Related(&flights[i].Airline,"airline_refer").Related(&flights[i].From,"from_refer").Related(&flights[i].To,"to_refer")
+	}
 
 	return flights, nil
+}
+
+func GetFlight(id int)(Flight){
+	db, err:= database.Connect()
+
+	if err != nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	var flight Flight
+
+	db.Preload("Routes").First(&flight)
+
+
+	db.Model(flight).Related(&flight.Airline,"airline_refer").Related(&flight.From,"from_refer").Related(&flight.To,"to_refer")
+
+	return flight
 }
 
 func GetFlights(source string, destination string)([]Flight,error){
@@ -128,6 +155,61 @@ func GetFlights(source string, destination string)([]Flight,error){
 	return flights,nil
 
 }
+
+func CreateFlight(f Flight, t []FlightRoute){
+	db, err:= database.Connect()
+
+	if err!= nil{
+		panic(err)
+	}
+
+	defer db.Close()
+	db.Create(&f)
+
+	var flight Flight
+
+	db.Where("airline_refer = ? AND from_refer = ? AND to_refer = ? ",f.AirlineRefer,f.FromRefer,f.ToRefer).First(&flight)
+
+	CreateRoutes(flight.Id, t)
+
+}
+func CreateRoutes(id int, t []FlightRoute){
+	db, err:= database.Connect()
+
+	if err!= nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	for i:= range(t){
+		t[i].FlightRouteRefer = id
+		db.Create(&t[i])
+	}
+
+}
+
+func UpdateFlight(id int, f Flight){
+	db, err:= database.Connect()
+
+	if err!= nil{
+		panic(err)
+	}
+
+	defer db.Close()
+
+	db.Model(&Flight{}).Where("id = ?",id).Updates(Flight{
+		AirlineRefer:  f.AirlineRefer,
+		FromRefer:     f.FromRefer,
+		ToRefer:       f.ToRefer,
+		Duration:      f.Duration,
+		Price:         f.Price,
+	})
+
+
+}
+
+
 
 func DeleteFlight(id int){
 	db, err:= database.Connect()

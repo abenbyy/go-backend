@@ -14,6 +14,14 @@ func GetAllFlights(p graphql.ResolveParams)(i interface{}, e error){
 
 }
 
+func GetFlight(p graphql.ResolveParams)(i interface{}, e error){
+	id:= p.Args["id"].(int)
+
+	flight:= models.GetFlight(id)
+
+	return flight, nil
+}
+
 func GetFlights(p graphql.ResolveParams) (i interface{},e error){
 	source :=p.Args["source"].(string)
 	destination :=p.Args["destination"].(string)
