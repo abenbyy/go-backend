@@ -31,7 +31,7 @@ func main(){
 	wrapped := middleware.CorsMiddleware(h)
 
 	router := api.NewRouter()
-	router.Handle("/api",wrapped)
+	router.Handle("/api/{key}",wrapped)
 	log.Fatalln(http.ListenAndServe(":2000",router))
 
 

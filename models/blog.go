@@ -1,6 +1,9 @@
 package models
 
-import "github.com/abenbyy/go-backend/database"
+import (
+	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
+)
 
 type Blog struct{
 	Id 			int  `gorm:primary_key`
@@ -35,7 +38,17 @@ func GetBlog(id int)(Blog, error){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
 	var blog Blog
+
+	if err != nil{
+		return blog, err
+	}
+
+
+
+
 	db.Where("id = ?",id).First(&blog)
 
 	return blog, nil
@@ -43,11 +56,20 @@ func GetBlog(id int)(Blog, error){
 func GetBlogs()([]Blog, error){
 	db, err := database.Connect()
 
+
 	if err !=nil{
 		panic(err)
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
+
+
 
 	var blogs []Blog
 
@@ -66,6 +88,14 @@ func GetPopularBlogs()([]Blog, error){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
+
+
+
 	var blogs []Blog
 
 	db.Order("viewer desc").Limit(5).Find(&blogs)
@@ -82,6 +112,12 @@ func CreateBlog(title string, category string, content string, image string)(err
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return err
+	}
 
 	db.Save(&Blog{
 		Title:   title,
@@ -103,6 +139,11 @@ func UpdateBlog(id int, bl Blog){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Model(&Blog{}).Where("id = ?", id).Updates(Blog{
 		Title:    bl.Title,
@@ -123,6 +164,14 @@ func DeleteBlog(id int){
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
+
+
 
 	db.Where("id = ?",id).Delete(&Blog{})
 
