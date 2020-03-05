@@ -26,8 +26,7 @@ func UpdateUser(p graphql.ResolveParams)(i interface{}, e error){
 	city:= p.Args["city"].(string)
 	address:= p.Args["address"].(string)
 	postcode:= p.Args["postcode"].(string)
-	lang:= p.Args["languange"].(string)
-	currency:= p.Args["currency"].(string)
+	lang:= p.Args["language"].(string)
 
 	u:= models.User{
 		FirstName: fname,
@@ -38,7 +37,7 @@ func UpdateUser(p graphql.ResolveParams)(i interface{}, e error){
 		Address:   address,
 		PostCode:  postcode,
 		Language:  lang,
-		Currency:  currency,
+		Currency:  "IDR",
 	}
 
 	user:= models.UpdateDetail(id,u)

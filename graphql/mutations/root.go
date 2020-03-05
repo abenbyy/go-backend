@@ -76,10 +76,6 @@ func GetRoot() *graphql.Object{
 						Type: graphql.String,
 
 					},
-					"currency": &graphql.ArgumentConfig{
-						Type: graphql.String,
-
-					},
 				},
 				Resolve: res.UpdateUser,
 				Description: "Update User",
