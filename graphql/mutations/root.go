@@ -484,6 +484,36 @@ func GetRoot() *graphql.Object{
 				Resolve: res.UpdateTrip,
 				Description: "Create Train Trip",
 			},
+			"createchat":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"user1": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"user2": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+				},
+				Resolve: res.CreateChat,
+				Description: "Create Chat",
+			},
+			"updatechat":{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+
+					},
+					"content": &graphql.ArgumentConfig{
+						Type: graphql.String,
+
+					},
+				},
+				Resolve: res.UpdateChat,
+				Description: "Update Chat",
+			},
 		},
 	})
 }

@@ -310,6 +310,26 @@ func GetRoot() *graphql.Object{
 				Resolve: res.GetTrip,
 				Description: "Get Trip by id",
 			},
+			"allchat":{
+				Type: graphql.NewList(typ.GetChatType()),
+				Args:graphql.FieldConfigArgument{
+					"userid": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetAllChat,
+				Description: "Get All Chats by userid",
+			},
+			"chat":{
+				Type: graphql.NewList(typ.GetChatType()),
+				Args:graphql.FieldConfigArgument{
+					"id": &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+				Resolve: res.GetChat,
+				Description: "Get Chat by Id",
+			},
 		},
 	})
 }
