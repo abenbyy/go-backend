@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -101,6 +102,11 @@ func GetAllFlights()([]Flight, error){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var flights []Flight
 
@@ -121,10 +127,14 @@ func GetFlight(id int)(Flight){
 	}
 
 	defer db.Close()
-
 	var flight Flight
+	_, err = ValidateKey(middleware.ApiKey)
 
-	db.Preload("Routes").First(&flight)
+	if err != nil{
+		return flight
+	}
+
+	db.Where("id = ?",id).Preload("Routes").First(&flight)
 
 
 	db.Model(flight).Related(&flight.Airline,"airline_refer").Related(&flight.From,"from_refer").Related(&flight.To,"to_refer")
@@ -140,6 +150,11 @@ func GetFlights(source string, destination string)([]Flight,error){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil , err
+	}
 	var flights []Flight
 
 	db.Where("from_refer IN (?) AND to_refer IN (?)", db.Table("airports").Select("Id").Where("city = ?",source).SubQuery(), db.Table("airports").Select("Id").Where("city = ?",destination).SubQuery()).Preload("Facilities").Preload("Routes").Find(&flights)
@@ -164,6 +179,12 @@ func CreateFlight(f Flight, t []FlightRoute){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
+
 	db.Create(&f)
 
 	var flight Flight
@@ -182,6 +203,11 @@ func CreateRoutes(id int, t []FlightRoute){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 	for i:= range(t){
 		t[i].FlightRouteRefer = id
 		db.Create(&t[i])
@@ -197,6 +223,12 @@ func UpdateFlight(id int, f Flight){
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Model(&Flight{}).Where("id = ?",id).Updates(Flight{
 		AirlineRefer:  f.AirlineRefer,
@@ -219,6 +251,11 @@ func DeleteFlight(id int){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Where("id = ?",id).Delete(&Flight{})
 }
@@ -230,6 +267,11 @@ func FilterFlights(reqairlines interface{},reqfacilities interface{}, reqdepartu
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil , err
+	}
 	rairlines:= reqairlines.([]interface{})
 	rfacilities:= reqfacilities.([]interface{})
 	rdepartures:= reqdepartures.([]interface{})

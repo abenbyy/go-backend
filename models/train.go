@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 )
 
 type Train struct {
@@ -126,6 +127,12 @@ func GetTrains()([]Train, error){
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var trains []Train
 

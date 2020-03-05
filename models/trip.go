@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -53,6 +54,12 @@ func GetAllTrips()([]Trip){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil
+	}
+
 	var trips []Trip
 
 	db.Find(&trips)
@@ -73,6 +80,11 @@ func GetTrip(id int)(Trip){
 	defer db.Close()
 
 	var trip Trip
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return trip
+	}
 
 	db.Where("id = ?",id).First(&trip)
 
@@ -91,6 +103,11 @@ func GetTrips(source string, destination string)([]Trip, error){
 	defer db.Close()
 
 	var trips []Trip
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	//fmt.Println(db.Table("stations").Select("Id").Where("city = ?",source))
 	//fmt.Println(db.Table("stations").Select("Id").Where("city = ?",destination))
@@ -117,6 +134,12 @@ func CreateTrip(t Trip){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
+
 	db.Create(&t)
 
 
@@ -130,6 +153,12 @@ func UpdateTrip(id int,t Trip){
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Model(&Trip{}).Where("id = ?",id).Updates(Trip{
 		TrainRefer: t.TrainRefer,
@@ -149,6 +178,11 @@ func DeleteTrip(id int){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Where("id = ?", id).Delete(&Trip{})
 }

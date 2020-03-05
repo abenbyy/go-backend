@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -70,6 +71,13 @@ func GetEntertainment(id int)(Entertainment){
 
 	var ent Entertainment
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return ent
+	}
+
+
 	db.Where("id = ?", id).Preload("Tickets").First(&ent)
 
 	return ent
@@ -82,6 +90,11 @@ func GetAllEntertainments()([]Entertainment){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil
+	}
 
 	var ent []Entertainment
 
@@ -98,6 +111,12 @@ func GetEntertainments(enttype string)([]Entertainment, error){
 	}
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
+
 	var entertainments []Entertainment
 
 	db.Where("type = ?",enttype).Preload("Tickets").Find(&entertainments)
@@ -112,6 +131,12 @@ func GetTrendingEntertainments(enttype string)([]Entertainment, error){
 		panic(err)
 	}
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var entertainments []Entertainment
 
@@ -128,6 +153,11 @@ func GetBestEntertainments()([]Entertainment, error){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var entertainments []Entertainment
 	db.Where("is_best = ?",true).Preload("Tickets").Find(&entertainments)
@@ -145,6 +175,12 @@ func CreateEntertainment(ent Entertainment, tickets []EntertainmentTicket){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
+
 	db.Create(&ent)
 
 	var newent Entertainment
@@ -161,6 +197,12 @@ func CreateTicket(refer int, tickets []EntertainmentTicket){
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	for i := range(tickets){
 		tickets[i].TicketRefer = refer
@@ -188,6 +230,11 @@ func UpdateEntertainment(id int, ent Entertainment)(e error){
 
 	defer db.Close()
 
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	fail := db.Model(&Entertainment{}).Where("id = ?",id).Updates(Entertainment{
 		Name:      ent.Name,
@@ -213,6 +260,12 @@ func DeleteEntertainment(id int)(e error){
 	}
 
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	fail := db.Where("id = ?",id).Delete(Entertainment{}).Error
 

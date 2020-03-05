@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -110,6 +111,11 @@ func GetAllHotels()([]Hotel){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil
+	}
 
 	var hotels []Hotel
 
@@ -128,7 +134,13 @@ func GetHotel(id int)(Hotel){
 
 	defer db.Close()
 
+
 	var hotel Hotel
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return hotel
+	}
 
 	db.Where("id = ?",id).Preload("Rooms").Preload("Facilities").Preload("Reviews").First(&hotel)
 
@@ -143,6 +155,11 @@ func CreateHotel(hotel Hotel, facility HotelFacility){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Create(&hotel)
 
@@ -166,6 +183,11 @@ func UpdateHotel(id int, hotel Hotel, facility HotelFacility){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Model(&Hotel{}).Where("id = ?",id).Updates(Hotel{
 
@@ -203,6 +225,11 @@ func GetHotels(city string)([]Hotel,error){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var hotels []Hotel
 
@@ -215,6 +242,12 @@ func GetHotels(city string)([]Hotel,error){
 }
 
 func FilterHotels(reqstars interface{})([]Hotel,error){
+
+	_, err := ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, nil
+	}
 
 	var inithotel []Hotel
 	inithotel = recenthotels
@@ -252,6 +285,11 @@ func GetNearestHotels(latitude float64, longitude float64, amount int)([]Hotel, 
 	}
 
 	var hotels []Hotel
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	db.Where("id IN (?)",db.Raw("SELECT id FROM (SELECT id,(3959 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude )))) AS distance FROM hotels ORDER BY distance LIMIT 8) AS sub",latitude,longitude,latitude).SubQuery()).Preload("Reviews").Preload("Rooms").Preload("Facilities").Find(&hotels)
 
@@ -275,6 +313,11 @@ func DeleteHotel(id int){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return
+	}
 
 	db.Where("id = ?", id).Delete(&Hotel{})
 }

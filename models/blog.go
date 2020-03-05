@@ -38,9 +38,14 @@ func GetBlog(id int)(Blog, error){
 
 	defer db.Close()
 
+	var blog Blog
 	_, err = ValidateKey(middleware.ApiKey)
 
-	var blog Blog
+	if err!=nil{
+		return blog,err
+	}
+
+
 
 	if err != nil{
 		return blog, err

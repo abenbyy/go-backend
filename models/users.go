@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -45,6 +46,11 @@ func GetAllUser() ([]User , error){
 	defer db.Close()
 
 	var users []User
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	db.Find(&users)
 
@@ -57,6 +63,11 @@ func GetUserByEmail(email string)([]User, error){
 		return nil,err
 	}
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var user []User
 
@@ -75,6 +86,11 @@ func GetUserByPhone(phone string)([]User, error){
 		return nil,err
 	}
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var user []User
 
@@ -94,6 +110,11 @@ func GetUserByPhoneOrEmail(arg string) ([]User, error){
 		return nil,err
 	}
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var user []User
 
@@ -113,6 +134,13 @@ func CreateUser(firstname string, lastname string, password string, email string
 		return nil,err
 	}
 	defer db.Close()
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
+
 	var user = User{
 
 		FirstName: firstname,
@@ -143,6 +171,14 @@ func UpdateDetail(id int,u User)(User){
 
 	defer db.Close()
 
+	var user User
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return user
+	}
+
 	db.Model(User{}).Where("id = ?",id).Updates(User{
 
 		FirstName: u.FirstName,
@@ -158,7 +194,7 @@ func UpdateDetail(id int,u User)(User){
 		Currency:  u.Currency,
 	})
 
-	var user User
+
 
 	db.Where("id = ?",id).First(&user)
 

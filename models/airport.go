@@ -3,6 +3,7 @@ package models
 import (
 	_"fmt"
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -72,6 +73,12 @@ func GetAirports()([]Airport, error){
 	defer db.Close()
 
 	var airports []Airport
+
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	db.Find(&airports)
 

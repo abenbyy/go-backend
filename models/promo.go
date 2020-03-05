@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/abenbyy/go-backend/database"
+	"github.com/abenbyy/go-backend/middleware"
 	"time"
 )
 
@@ -42,6 +43,11 @@ func GetPromos()([]Promo, error){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var promos []Promo
 
@@ -59,6 +65,11 @@ func GetPromo(id int)(Promo,error){
 	defer db.Close()
 
 	var promo Promo
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return promo, err
+	}
 
 	db.Where("id = ?",id).First(&promo)
 
@@ -75,6 +86,11 @@ func GetOtherPromo(id int)([]Promo, error){
 	}
 
 	defer db.Close()
+	_, err = ValidateKey(middleware.ApiKey)
+
+	if err != nil{
+		return nil, err
+	}
 
 	var promos []Promo
 
